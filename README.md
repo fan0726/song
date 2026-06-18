@@ -43,41 +43,49 @@ dist/
 > 目标平台在 `package.json` 的 `"pkg".targets` 里配置，可按需增删。
 > 这些二进制内置了 Node 运行时，**目标机器无需安装 Node**。
 
-## 部署到 Linux 服务器（供他人下载）
+## 发布新版本（维护者）
 
-1. 把 `dist/` 里的二进制和 `install.sh` 放到服务器某个目录，例如 `/var/www/song/`：
+二进制通过 **GitHub Releases** 分发，不进 git 仓库：
 
-   ```
-   /var/www/song/
-   ├── song-linux-x64
-   ├── song-linux-arm64
-   └── install.sh
-   ```
+```bash
+npm run build          # 生成 dist/song-linux-x64、dist/song-linux-arm64
+gh release create v1.0.1 dist/song-linux-* --title "song v1.0.1" --notes "..."
+```
 
-2. 用任意 Web 服务把该目录暴露出去（Nginx / Caddy / 甚至临时用 `python3 -m http.server`）。
-   假设外网可访问地址是 `http://你的服务器/song/`。
-
-3. 编辑 `install.sh`，把顶部的 `BASE_URL` 改成上面的地址（或安装时用环境变量覆盖）。
+`install.sh` 默认从 `releases/latest/download` 拉取，因此发完新 Release 无需改任何地址。
 
 ## 别人怎么用（在他们的机器上）
+
+仓库是 **Public**，以下命令无需任何认证。
 
 **方式一：一键安装脚本（推荐，自动识别架构）**
 
 ```bash
-curl -fsSL http://你的服务器/song/install.sh | bash
+curl -fsSL https://github.com/fan0726/song/releases/latest/download/install.sh | bash
 song -v
 song wtr
 ```
 
+> 注：要让上面这条生效，需把 `install.sh` 也作为 Release 资产上传一次：
+> `gh release upload v1.0.0 install.sh`
+
 **方式二：直接 curl 下载二进制**
 
 ```bash
-# x86_64 服务器
-curl -fsSL http://你的服务器/song/song-linux-x64 -o /usr/local/bin/song
+# x86_64
+curl -fsSL https://github.com/fan0726/song/releases/latest/download/song-linux-x64 -o /usr/local/bin/song
 chmod +x /usr/local/bin/song
+
+# ARM64 则把上面的 song-linux-x64 换成 song-linux-arm64
 
 song -v
 song wtr 北京
+```
+
+**方式三：用 gh CLI**
+
+```bash
+gh release download -R fan0726/song -p 'song-linux-*'
 ```
 
 ## 如何新增指令

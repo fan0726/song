@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # song CLI 一键安装脚本。
 # 用法(在目标机器上)：
-#   curl -fsSL http://你的服务器/song/install.sh | bash
+#   curl -fsSL https://github.com/fan0726/song/releases/latest/download/install.sh | bash
 # 可选环境变量：
-#   SONG_BASE_URL    二进制所在目录的 URL，默认见下方
+#   SONG_BASE_URL    二进制所在目录的 URL，默认指向 GitHub 最新 Release
 #   SONG_INSTALL_DIR 安装目录，默认 /usr/local/bin
 set -euo pipefail
 
-# ↓↓↓ 部署后把这里改成你自己服务器上存放二进制的目录 URL ↓↓↓
-BASE_URL="${SONG_BASE_URL:-http://YOUR_SERVER/song}"
+# 默认从 GitHub 最新 Release 下载二进制
+BASE_URL="${SONG_BASE_URL:-https://github.com/fan0726/song/releases/latest/download}"
 INSTALL_DIR="${SONG_INSTALL_DIR:-/usr/local/bin}"
 
 # 根据 CPU 架构选择对应二进制
