@@ -10,22 +10,8 @@
     "start": "node bin/song.js",
     "build": "bash scripts/build.sh"
   },
-  "pkg": {
-    "scripts": [
-      "bin/**/*.js",
-      "src/**/*.js"
-    ],
-    "assets": [
-      "package.json"
-    ],
-    "targets": [
-      "node22-linux-x64",
-      "node22-linux-arm64"
-    ],
-    "outputPath": "dist"
-  },
   "devDependencies": {
-    "@yao-pkg/pkg": "^6.3.0"
+    "esbuild": "^0.24.0"
   },
   "license": "MIT"
 }

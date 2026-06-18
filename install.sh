@@ -1,25 +1,24 @@
 #!/usr/bin/env bash
-# song CLI 一键安装脚本。
+# song CLI 一键安装脚本（Node 脚本版，需目标机器已安装 Node.js）。
 # 用法(在目标机器上)：
 #   curl -fsSL https://github.com/fan0726/song/releases/latest/download/install.sh | bash
 # 可选环境变量：
-#   SONG_BASE_URL    二进制所在目录的 URL，默认指向 GitHub 最新 Release
+#   SONG_BASE_URL    song 脚本所在目录的 URL，默认指向 GitHub 最新 Release
 #   SONG_INSTALL_DIR 安装目录，默认 /usr/local/bin
 set -euo pipefail
 
-# 默认从 GitHub 最新 Release 下载二进制
 BASE_URL="${SONG_BASE_URL:-https://github.com/fan0726/song/releases/latest/download}"
 INSTALL_DIR="${SONG_INSTALL_DIR:-/usr/local/bin}"
 
-# 根据 CPU 架构选择对应二进制
-arch="$(uname -m)"
-case "$arch" in
-  x86_64|amd64)   asset="song-linux-x64"   ;;
-  aarch64|arm64)  asset="song-linux-arm64" ;;
-  *) echo "不支持的架构: $arch" >&2; exit 1 ;;
-esac
+# song 是 Node 脚本，运行需要 node
+if ! command -v node >/dev/null 2>&1; then
+  echo "错误：未检测到 Node.js，请先安装 Node.js (>=18) 再运行本脚本。" >&2
+  echo "      参考：https://nodejs.org/  或  nvm install --lts" >&2
+  exit 1
+fi
+echo "==> 已检测到 Node $(node -v)"
 
-url="$BASE_URL/$asset"
+url="$BASE_URL/song"
 echo "==> 正在下载 $url ..."
 tmp="$(mktemp)"
 curl -fsSL "$url" -o "$tmp"

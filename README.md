@@ -1,6 +1,8 @@
 # song
 
-一个用 Node.js 写的命令行工具，封装了对第三方接口的调用。可打包成**独立二进制**（内含 Node 运行时），部署到 Linux 服务器后，别人通过 `curl` 下载即可直接使用，无需安装 Node。
+一个用 Node.js 写的命令行工具，封装了对第三方接口的调用。打包成**单文件 Node 脚本**通过 GitHub Releases 分发，别人 `curl` 下载即可使用。
+
+> ⚠️ **运行需要目标机器已安装 Node.js (>=18)。**
 
 ## 指令一览
 
@@ -23,7 +25,7 @@ node bin/song.js wtr
 node bin/song.js wtr 广州
 ```
 
-## 打包成独立二进制
+## 打包成单文件脚本
 
 在**有 Node 环境的机器**（如你的 Mac）上执行：
 
@@ -32,33 +34,31 @@ npm run build
 # 等价于 bash scripts/build.sh
 ```
 
-产物在 `dist/` 目录：
+用 esbuild 把 `src/` 打包进一个带 shebang 的单文件，产物：
 
 ```
 dist/
-├── song-linux-x64      # x86_64 服务器用
-└── song-linux-arm64    # ARM 服务器用
+└── song     # 单文件 Node 脚本（几十 KB），需目标机器已装 Node
 ```
-
-> 目标平台在 `package.json` 的 `"pkg".targets` 里配置，可按需增删。
-> 这些二进制内置了 Node 运行时，**目标机器无需安装 Node**。
 
 ## 发布新版本（维护者）
 
-二进制通过 **GitHub Releases** 分发，不进 git 仓库：
+脚本通过 **GitHub Releases** 分发，不进 git 仓库：
 
 ```bash
-npm run build          # 生成 dist/song-linux-x64、dist/song-linux-arm64
-gh release create v1.0.1 dist/song-linux-* --title "song v1.0.1" --notes "..."
+npm run build          # 生成 dist/song
+gh release upload v1.0.0 dist/song install.sh --clobber   # 覆盖到已有 Release
+# 或新建一个版本：
+# gh release create v1.1.0 dist/song install.sh --title "song v1.1.0" --notes "..."
 ```
 
 `install.sh` 默认从 `releases/latest/download` 拉取，因此发完新 Release 无需改任何地址。
 
 ## 别人怎么用（在他们的机器上）
 
-仓库是 **Public**，以下命令无需任何认证。
+仓库是 **Public**，以下命令无需任何认证。**前提：目标机器已安装 Node.js (>=18)。**
 
-**方式一：一键安装脚本（推荐，自动识别架构）**
+**方式一：一键安装脚本（推荐，会先检测 Node）**
 
 ```bash
 curl -fsSL https://github.com/fan0726/song/releases/latest/download/install.sh | bash
@@ -66,17 +66,11 @@ song -v
 song wtr
 ```
 
-> 注：要让上面这条生效，需把 `install.sh` 也作为 Release 资产上传一次：
-> `gh release upload v1.0.0 install.sh`
-
-**方式二：直接 curl 下载二进制**
+**方式二：直接 curl 下载脚本**
 
 ```bash
-# x86_64
-curl -fsSL https://github.com/fan0726/song/releases/latest/download/song-linux-x64 -o /usr/local/bin/song
+curl -fsSL https://github.com/fan0726/song/releases/latest/download/song -o /usr/local/bin/song
 chmod +x /usr/local/bin/song
-
-# ARM64 则把上面的 song-linux-x64 换成 song-linux-arm64
 
 song -v
 song wtr 北京
@@ -85,7 +79,7 @@ song wtr 北京
 **方式三：用 gh CLI**
 
 ```bash
-gh release download -R fan0726/song -p 'song-linux-*'
+gh release download -R fan0726/song -p song
 ```
 
 ## 如何新增指令
@@ -116,7 +110,7 @@ song/
 │       ├── help.js
 │       ├── version.js
 │       └── wtr.js
-├── scripts/build.sh     # 打包脚本（pkg 交叉编译）
+├── scripts/build.sh     # 打包脚本（esbuild 单文件打包）
 ├── install.sh           # 终端用户一键安装脚本
 └── package.json
 ```
