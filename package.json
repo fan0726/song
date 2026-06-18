@@ -1,0 +1,31 @@
+{
+  "name": "song",
+  "version": "1.0.0",
+  "description": "song —— 一个可调用第三方接口的命令行工具",
+  "bin": {
+    "song": "bin/song.js"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node bin/song.js",
+    "build": "bash scripts/build.sh"
+  },
+  "pkg": {
+    "scripts": [
+      "bin/**/*.js",
+      "src/**/*.js"
+    ],
+    "assets": [
+      "package.json"
+    ],
+    "targets": [
+      "node22-linux-x64",
+      "node22-linux-arm64"
+    ],
+    "outputPath": "dist"
+  },
+  "devDependencies": {
+    "@yao-pkg/pkg": "^6.3.0"
+  },
+  "license": "MIT"
+}
